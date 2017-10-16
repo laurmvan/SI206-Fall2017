@@ -17,4 +17,5 @@ for list1 in numbers:
 
 print (total)
 print (count)
+print (total)
 
