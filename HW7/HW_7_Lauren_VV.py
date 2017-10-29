@@ -41,7 +41,7 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 # And we've provided the setup for your cache. But we haven't written any functions for you, so you have to be sure that any function that gets data from the internet relies on caching, just like in Project 2.
 CACHE_FNAME = "HW7_cache_3.json"
 try:
-	cache_file = open(CACHE_FNAME,'r')
+	cache_file = open(CACHE_FNAME,'r') #check to see if there is an existing file as CACHE_FNAME
 	cache_contents = cache_file.read()
 	cache_file.close()
 	CACHE_DICTION = json.loads(cache_contents)
@@ -59,31 +59,31 @@ def get_user_tweets(key):
 	formatted_key = "twitter_{}".format(key)
 	response_list = []
 	if formatted_key in CACHE_DICTION:
-		print ('caching')
+		print ('caching') #to indicate when using cache
 		response_list = CACHE_DICTION[formatted_key]
 		for i in range(5):
 			print ("TEXT:" ,CACHE_DICTION[formatted_key]['statuses'][i]['text'])
-			print ("CREATED AT: ",CACHE_DICTION[formatted_key]['statuses'][i]['created_at'],'\n')
+			print ("CREATED AT: ",CACHE_DICTION[formatted_key]['statuses'][i]['created_at'],'\n') #formated output
 		# for i in range(5): #printing out text and created at date if info is cached
 		# 	print ('TEXT: ', CACHE_DICTION[formatted_key][int(i)]['text'])
 		# 	print ('CREATED AT: ', CACHE_DICTION[formatted_key][int(i)]['created_at'],'\n')
 		CACHE_DICTION[formatted_key]=response_list
 	else:
-		print ('fetching')
+		print ('fetching') #to indicate when going to the web to fetch new data
 		response_list = []
 		formatted_key = "twitter_{}".format(key)
-		input_tweets = api.search(q = key, count = 5)
+		input_tweets = api.search(q = key, count = 5) #just to get 5 tweets
 		CACHE_DICTION[formatted_key] = input_tweets
-		cache_file = open(CACHE_FNAME, 'w', encoding = 'utf-8')
-		cache_file.write(json.dumps(CACHE_DICTION))
+		cache_file = open(CACHE_FNAME, 'w', encoding = 'utf-8') #to help with any potential encoding errors when writing the file
+		cache_file.write(json.dumps(CACHE_DICTION)) #creating the cache file
 		cache_file.close()
 		save_list = []
 		for i in range(5): #printing out text and created at date if needs to fetch
-			print ('TEXT: ' ,input_tweets['statuses'][i]['text'])
+			print ('TEXT: ' ,input_tweets['statuses'][i]['text']) #formatted output
 			print ('CREATED AT: ', input_tweets['statuses'][i]['created_at'],'\n')
 		for tweet in input_tweets:
 			response_list.append(tweet)
-		CACHE_DICTION[formatted_key]=response_list
+		CACHE_DICTION[formatted_key]=response_list #creating a response list
 
 
 	return (response_list)
@@ -93,10 +93,10 @@ user_input = input('Enter a term: ')
 formatted_key = "twitter_{}".format(user_input)
 input_tweets = api.search(q = user_input, count = 5)
 
-while user_input != "":
+while user_input != "": #continues to take user input until no text is entered
 	get_user_tweets(user_input)
 	user_input = input('Enter a term: ')
-	if (user_input == ''):
+	if (user_input == ''): #stops if input is empty
 		break
 	else:
 		input_tweets = api.search(q = user_input, count = 5)
