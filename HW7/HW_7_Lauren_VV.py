@@ -39,7 +39,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 # And we've provided the setup for your cache. But we haven't written any functions for you, so you have to be sure that any function that gets data from the internet relies on caching, just like in Project 2.
-CACHE_FNAME = "HW7_cache_3.json"
+CACHE_FNAME = "HW7_cache_8.json"
 try:
 	cache_file = open(CACHE_FNAME,'r') #check to see if there is an existing file as CACHE_FNAME
 	cache_contents = cache_file.read()
@@ -67,7 +67,6 @@ def get_user_tweets(key):
 		# for i in range(5): #printing out text and created at date if info is cached
 		# 	print ('TEXT: ', CACHE_DICTION[formatted_key][int(i)]['text'])
 		# 	print ('CREATED AT: ', CACHE_DICTION[formatted_key][int(i)]['created_at'],'\n')
-		CACHE_DICTION[formatted_key]=response_list
 	else:
 		print ('fetching') #to indicate when going to the web to fetch new data
 		response_list = []
@@ -95,11 +94,10 @@ input_tweets = api.search(q = user_input, count = 5)
 
 while user_input != "": #continues to take user input until no text is entered
 	get_user_tweets(user_input)
+	formatted_key = "twitter_{}".format(user_input)
+	input_tweets = api.search(q = user_input, count = 5)
 	user_input = input('Enter a term: ')
-	if (user_input == ''): #stops if input is empty
-		break
-	else:
-		input_tweets = api.search(q = user_input, count = 5)
+
 
 
 
