@@ -2,6 +2,7 @@ import unittest
 import tweepy
 import requests
 import json
+import twitter_info
 
 ## SI 206 - HW
 ## COMMENT WITH:
@@ -46,10 +47,12 @@ import json
 ## Get your secret values to authenticate to Twitter. You may replace each of these 
 ## with variables rather than filling in the empty strings if you choose to do the secure way 
 ## for EC points
-consumer_key = 'y3U5vFt749as2xWzAAKBzVAl3'
-consumer_secret = 'gS0ELT7GniQKosvW3YuQPa7q1eHIGRLlsM8kbj17vL5QmAymbW'
-access_token = '285065623-lCHmnGXNU1Z2cBLr9Pcupaleyv9NFL8Vfvd56Uqa'
-access_token_secret = 'u0Xu4dXBIE2PeKnsVmLeqMAudM9Zxdy9vAqp5t0CF8fcy'
+
+consumer_key = twitter_info.consumer_key
+consumer_secret = twitter_info.consumer_secret
+access_token = twitter_info.access_token
+access_token_secret = twitter_info.access_token_secret
+
 ## Set up your authentication to Twitter
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -65,33 +68,49 @@ public_tweets = api.home_timeline()
 ## 1. Set up the caching pattern start -- the dictionary and the try/except 
 ## 		statement shown in class.
 
+CACHE_FNAME = "206_HW7_cache.json"
+try:
+	cache_file = open(CACHE_FNAME,'r')
+	cache_contents = cache_file.read()
+	cache_file.close()
+	CACHE_DICTION = json.loads(cache_contents)
+except:
+	CACHE_DICTION = {}
 
 ## 2. Write a function to get twitter data that works with the caching pattern, 
 ## 		so it either gets new data or caches data, depending upon what the input 
 ##		to search for is. 
 
-def get_tweet_match(s):
-	count = 0
-	for tweet in public_tweets:
-		if s in tweet['text'] and count < 6:
-			tweet_t = tweet['text']
-			print("TEXT: ",tweet_t)
-			created = tweet['created_at']
-			print("CREATED AT: ",created,'\n')
-			count+=1
+def get_tweet_match(key):
+	if key in CACHE_DICTION:
+		print ("caching")
+		response_list = CACHE_DICTION[key]
+		print (response_list)
+	else:
+		#print ("fetching")
+		for tweet in public_tweets:
+			cache_file = open(CACHE_FNAME, 'w')
+			cache_file.write(json.dumps(CACHE_DICTION))
+			cache_file.close()
+			response_list.append(CACHE_DICTION[key])
 
-	# return_dict = {}
-	# for tweet in public_tweets:
-	# 	if s in tweet['text']:
-	# 		return_dict['TEXT']=tweet['text']
-	# 		return_dict['CREATED AT']=tweet['created_at']
-	# return return_dict
+	return response_list
+
 
 ## 3. Using a loop, invoke your function, save the return value in a variable, and explore the 
 ##		data you got back!
-
 user_input = input('Enter Tweet term: ')
-print (get_tweet_match(user_input))
+
+while user_input is not '':
+	dataaaaa = get_tweet_match(user_input)
+
+	for text_date in dataaaaa:
+		tweet_t = text_date['text']
+		print("TEXT: ",tweet_t)
+		created = text_date['created_at']
+		print("CREATED AT: ",created,'\n')
+	user_input = input('Enter Tweet term: ')
+
 ## 4. With what you learn from the data -- e.g. how exactly to find the 
 ##		text of each tweet in the big nested structure -- write code to print out 
 ## 		content from 5 tweets, as shown in the linked example.
