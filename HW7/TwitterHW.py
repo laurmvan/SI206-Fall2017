@@ -18,7 +18,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 # And we've provided the setup for your cache. But we haven't written any functions for you, so you have to be sure that any function that gets data from the internet relies on caching.
-CACHE_FNAME = "twitter_cache.json"
+CACHE_FNAME = "twitter_cache_9.json"
 try:
     cache_file = open(CACHE_FNAME,'r')
     cache_contents = cache_file.read()
@@ -35,34 +35,21 @@ except:
 
 def get_tweets(key): #get UMSI related tweets
     formatted_key = "twitter_{}".format(key)
-    response_list = []
     if formatted_key in CACHE_DICTION:
-        print ('caching') #to indicate when using cache
         response_list = CACHE_DICTION[formatted_key]
-        for i in range(5):
-            print ("TEXT:" ,CACHE_DICTION[formatted_key]['statuses'][i]['text'])
-
     else:
-        print ('fetching') #to indicate when going to the web to fetch new data
-        response_list = []
-        formatted_key = "twitter_{}".format(key)
-        input_tweets = api.search(q = key, count = 5) #just to get 5 tweets
-        CACHE_DICTION[formatted_key] = input_tweets
-        cache_file = open(CACHE_FNAME, 'w', encoding = 'utf-8') #to help with any potential encoding errors when writing the file
-        cache_file.write(json.dumps(CACHE_DICTION)) #creating the cache file
+        response =  api.user_timeline(key)
+        CACHE_DICTION[formatted_key] = response
+        cache_file = open(CACHE_FNAME, 'w', encoding = 'utf-8')
+        cache_file.write(json.dumps(CACHE_DICTION))
         cache_file.close()
-        save_list = []
-        for i in range(5): #printing out text and created at date if needs to fetch
-            print ('TEXT: ' ,input_tweets['statuses'][i]['text']) #formatted output
-        for tweet in input_tweets:
-            response_list.append(tweet)
-        CACHE_DICTION[formatted_key]=response_list #creating a response list
+        response_list = []
+        for r in response:
+            response_list.append(r)
 
-    return (response_list)
+    return response_list
 
 ##YOUR CODE HERE
-
-umsi_related_tweets = get_tweets('umsi')
 
 ## [PART 2]
 # Create a database: tweets.sqlite,
@@ -93,13 +80,15 @@ umsi_tweets = get_tweets('umsi')
 # 4 - Use a for loop, the cursor you defined above to execute INSERT statements, that insert the data from each of the tweets in umsi_tweets into the correct columns in each row of the Tweets database table.
 container = []
 
-for i in range(20):
+for i in range(len(umsi_tweets)):
+    # print (umsi_tweets['statuses'][i]['text'])
     id_item = umsi_tweets[i]["id"]
     user_item = umsi_tweets[i]["user"]["screen_name"]
     created_at_item = umsi_tweets[i]["created_at"]
     text_item = umsi_tweets[i]["text"]
     retweet_item = umsi_tweets[i]["retweet_count"]
     container.append((id_item, user_item, created_at_item, text_item, retweet_item))
+#print (container)
 
 p = 'INSERT INTO Tweets VALUES (?, ?, ?, ?, ?)'
 for i in container:
@@ -118,12 +107,20 @@ conn.commit()
     # Mon Oct 09 15:45:45 +0000 2017 - RT @MikeRothCom: Beautiful morning at @UMich - It’s easy to forget to
     # take in the view while running from place to place @umichDLHS  @umich…
 # Include the blank line between each tweet.
-
+tweets = "SELECT time_posted, tweet_text FROM Tweets"
+cur.execute(tweets)
+tweets = cur.fetchall()
+for tweet in tweets:
+    print (tweet[0] + " - " + tweet[1]+"\n")
 
 # Select the author of all of the tweets (the full rows/tuples of information) that have been retweeted MORE
 # than 2 times, and fetch them into the variable more_than_2_rts.
 # Print the results
-umsi_tweets = get_user_tweets('umsi')
+umsi_tweets = get_tweets('umsi')
+
+x = "SELECT author FROM Tweets WHERE retweets > 2"
+cur.execute(x)
+more_than_2_rts = cur.fetchall()
 
 
 if __name__ == "__main__":
