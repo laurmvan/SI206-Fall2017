@@ -91,8 +91,17 @@ for i in range(len(umsi_tweets)):
 #print (container)
 
 p = 'INSERT INTO Tweets VALUES (?, ?, ?, ?, ?)'
-for i in container:
-    cur.execute(p, i)
+for tweet in container:
+    print (tweet[3])
+
+    cur.execute(p, tweet)
+
+
+# p = 'INSERT INTO Tweets VALUES (?, ?, ?, ?, ?)'
+# for tweet in container:
+#     print (tweet[3])
+
+#     cur.execute(p, tweet)
 
 #  5- Use the database connection to commit the changes to the database
 
@@ -117,6 +126,7 @@ for tweet in tweets:
 # than 2 times, and fetch them into the variable more_than_2_rts.
 # Print the results
 umsi_tweets = get_tweets('umsi')
+print (type(umsi_tweets[0]['text']))
 
 x = "SELECT author FROM Tweets WHERE retweets > 2"
 cur.execute(x)
