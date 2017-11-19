@@ -60,25 +60,25 @@ except:
 
 # Define your function get_user_tweets here:
 def get_user_tweets(key):
-	if key in cache_dict:
+	if key in cache_dict: #using existing data if in dictionary
 		print ('Caching...')
-		tweets = cache_dict[key]
+		tweets = cache_dict[key] 
 	else:
-		print ('Fetching...')
+		print ('Fetching...') # fethcing data if not in dictionary
 		tweets=api.user_timeline(key)
 		cache_dict[key]=tweets
-		cache_file=open(CACHE_FNAME, 'w')
+		cache_file=open(CACHE_FNAME, 'w') #write a file 
 		cache_file.write(json.dumps(cache_dict))
 		cache_file.close()
-	return (tweets)
+	return (tweets) #output: tweets related to the key in the paramenters
 
 
 # Write an invocation to the function for the "umich" user timeline and 
 # save the result in a variable called umich_tweets:
-user_input=input('Enter user to see their Tweets: ')
+user_input=input('Enter user to see their Tweets: ') 
 if len(user_input)<1:
 	user_input='umsi'
-umich_tweets=get_user_tweets(user_input)
+umich_tweets=get_user_tweets(user_input) 
 
 
 ## Task 2 - Creating database and loading data into database
@@ -88,30 +88,30 @@ umich_tweets=get_user_tweets(user_input)
 # NOTE: For example, if the user with the "TedXUM" screen name is 
 # mentioned in the umich timeline, that Twitter user's info should be 
 # in the Users table, etc.
-conn=sqlite3.connect('206_APIsAndDBs.sqlite')
+conn=sqlite3.connect('206_APIsAndDBs.sqlite') 
 cur=conn.cursor()
 
-cur.execute('DROP Table if Exists Users')
-cur.execute('DROP Table if Exists Tweets')
-cur.execute('''Create Table Users (user_id TEXT PRIMARY KEY UNIQUE, screenname VARCHAR, num_favs INTEGER, description VARCHAR)''')
+cur.execute('DROP Table if Exists Users') #delete existing table Users if one exists
+cur.execute('DROP Table if Exists Tweets') #delete existing table Tweets if one exists
+cur.execute('''Create Table Users (user_id TEXT PRIMARY KEY UNIQUE, screenname VARCHAR, num_favs INTEGER, description VARCHAR)''') #create a new table 'Users'
 
 cur.execute('''Create Table Tweets(tweet_id TEXT PRIMARY KEY UNIQUE, text VARCHAR, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
 
 for tweet in umich_tweets:
-	output_tuple=(tweet['id_str'], tweet['text'],tweet['user']['id_str'] ,tweet['created_at'], tweet['retweet_count'])
+	output_tuple=(tweet['id_str'], tweet['text'],tweet['user']['id_str'] ,tweet['created_at'], tweet['retweet_count']) #get all information for tweets in umich_tweets (ie text, retweets, date created, ect)
 	cur.execute('Insert into Tweets (tweet_id, text, user_posted, time_posted, retweets) Values (?,?,?,?,?)', output_tuple,)
-conn.commit()
+conn.commit() 
 
-user_dict={}
+user_dict={} #create an empty dictionary
 
-for tweet in umich_tweets:
+for tweet in umich_tweets: #iterate through the dictionary created in def get_user_tweets
 	user=api.get_user(tweet['user']['screen_name'])
-	if user['name'] not in user_dict:
+	if user['name'] not in user_dict: #if a unique user name, add to dict
 		user_dict[user['name']]=user
 	for person in tweet['entities']['user_mentions']:
  		user=api.get_user(person['screen_name'])
  		if user['name'] not in user_dict:
- 			user_dict[user['name']]=user
+ 			user_dict[user['name']]=user #add username to dictionary if not already in the diciton
 
 for user in user_dict.keys():
 	output_tuple=(user_dict[user]['id_str'], user_dict[user]['screen_name'], user_dict[user]['favourites_count'], user_dict[user]['description'])
@@ -146,24 +146,24 @@ conn.commit()
 # Save the list of tuples in a variable called users_info.
 
 users_info = []
-rows=cur.execute('SELECT * FROM USERS')
+rows=cur.execute('SELECT * FROM USERS') #select all data from the table USERS
 for row in rows:
-	users_info.append(row)
+	users_info.append(row) # append records in user_info as a list of tuples
 
 # Make a query to select all of the user screen names from the database. 
 # Save a resulting list of strings (NOT tuples, the strings inside them!) 
 # in the variable screen_names. HINT: a list comprehension will make 
 # this easier to complete! 
 screen_names = []
-rows=cur.execute('SELECT (screenname) FROM USERS')
+rows=cur.execute('SELECT (screenname) FROM USERS') #select only the sreenname variable from the table Users
 for row in rows:
-	screen_names.append(row[0])
+	screen_names.append(row[0]) #append this to screennames
 
 # Make a query to select all of the tweets (full rows of tweet information)
 # that have been retweeted more than 10 times. Save the result 
 # (a list of tuples, or an empty list) in a variable called retweets.
 retweets = []
-rows=cur.execute('SELECT * FROM Tweets WHERE retweets>10')
+rows=cur.execute('SELECT * FROM Tweets WHERE retweets>10') #select everything from the Table Tweets if its been retweeted more than 10 times
 for row in rows:
 	retweets.append(row)
 
