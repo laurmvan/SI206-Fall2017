@@ -172,7 +172,7 @@ for row in rows:
 # strings, and save them in a variable called favorites, 
 # which should ultimately be a list of strings.
 favorites = []
-rows=cur.execute('SELECT (description) from USERS WHERE num_favs>500')
+rows=cur.execute('SELECT (description) FROM USERS WHERE num_favs>500')
 for row in rows:
 	favorites.append(row[0])
 
@@ -181,7 +181,7 @@ for row in rows:
 # elements in each tuple: the user screenname and the text of the 
 # tweet. Save the resulting list of tuples in a variable called joined_data2.
 joined_data = []
-rows=cur.execute('SELECT Users.screenname, Tweets.text FROM Users JOIN Tweets ON Users.user_id=Tweets.user_posted')
+rows=cur.execute('SELECT Users.screenname, Tweets.text FROM Users INNER JOIN Tweets ON Users.user_id=Tweets.user_posted') #innerjoin based on the user ID and who posted the tweet
 for row in rows:
 	joined_data.append(row)
 
@@ -191,7 +191,7 @@ for row in rows:
 # list of tuples in a variable called joined_data2.
 
 joined_data2 = []
-rows=cur.execute('SELECT Users.screenname, Tweets.text FROM Users Join Tweets On Users.user_id=tweets.user_posted Order by Tweets.retweets')
+rows=cur.execute('SELECT Users.screenname, Tweets.text FROM Users INNER JOIN Tweets ON Users.user_id=tweets.user_posted ORDER BY Tweets.retweets')
 for row in rows:
 	joined_data2.append(row)
 
