@@ -18,7 +18,7 @@ CREATE TABLE Artist (
 
 CREATE TABLE Genre (
     id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    name    TEXT UNIQUE
+    name    TEXT
 );
 
 CREATE TABLE Album (
@@ -84,7 +84,8 @@ for entry in all:
     cur.execute('''INSERT OR REPLACE INTO Track
         (title, genre, album_id, len, rating, count, ) 
         VALUES ( ?, ?, ?, ?, ?, ?)''', 
-        ( name, genre, album_id, length, rating, count )
+        ( name, genre, album_id, length, rating, count ) )
+    cur.execute('SELECT ')
 
     cur.execute('''INSERT OR REPLACE INTO Genre
         (genre_id, name) 
