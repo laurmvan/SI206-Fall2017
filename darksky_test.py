@@ -10,7 +10,7 @@ lng = '-83.738115'
 full_url = base_url+api_key+'/'+lat+lng
 response = requests.get(full_url)
 data = json.loads(response.text)
-#print(json.dumps(data, indent=4))
+
 data2 = (data['hourly']['data'])
 print (data.keys())
 print (data['currently']['summary'])
@@ -18,3 +18,4 @@ print (data['currently']['uvIndex'])
 print (data['currently']['precipProbability'])
 # for item in data2:
 # 	print ((datetime.fromtimestamp(item['time'])), (item['summary']), (item['temperature']))
+#print(json.dumps(data, indent=4))
