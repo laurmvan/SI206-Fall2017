@@ -5,17 +5,27 @@ import requests
 from datetime import datetime
 import io
 
-graph = facebook.GraphAPI(access_token="EAACEdEose0cBAOOTWWQgPp8VVTIeTGY7ULQ5tagpM9lTZBxhSZBPnGIeDydy5uVgck3desZAQYKLi0icqVygkZBAVVM4p999g3ORxbGKIok9O1aBRcaVXFNuckqcwOEApqTUbL3ixDnirtlNSZAn3c4IDWCitZA4PpZBRzoFaQNdj5PrNONZAXZBiN9C7VeIxgxwCPhxRJA47mqGFg1TZAMC3XyuBDKtY79cly9VTlq5vaDAZDZD", version="2.10")
+graph = facebook.GraphAPI(access_token="EAACEdEose0cBALtoZBQbZBFz6tJ8KYDrxr8ZBHUOzyqEG6JVQX2N7TOfyZCsCBt0TH0G7pj85FeQNEp6SSMWV7gzfPSdpG5ZBWsUjgRqBzCIuTinXmrNcSEc5ZCBB5uk6CG0GOUIC1eT6qL0jZCuEpfh8R0B8XvuJfOJg1ZAj2peUDo2gaEnibVQCDX1jPwsPEVxqSz9FbJthQZDZD", version="2.10")
 
-user = graph.get_object('1503585802990219')
+user = graph.get_object('100001584408888')
+
 # print(type(user['id']))
 # friends = graph.get_connections('1503585802990219', 'friends')
 # profile = graph.get_connections('1503585802990219', 'posts')
 # print(profile)
 # print (friends)
 
-profile = graph.get_object(user['id'], fields='name, profile_pic, gender, hometown, education, location{location}')
-print (profile['hometown'])
+friend_dict = {}
+list_friend_objects = []
+friends = graph.get_connections(user['id'], 'friends')
+print (friends)
+for friend in friends['data']:
+	friend_dict[friend['name']] = friend['id']
+for friend in friend_dict.keys():
+	print (friend) #prints name not id but I can make it print the id
+
+# profile = graph.get_object(user['id'], fields='name, gender, hometown, education, location{location}')
+# print (profile['hometown']['name'])
 
 
 #'name, profile_pic, gender, hometown, education, location{location}, work, timezone'
